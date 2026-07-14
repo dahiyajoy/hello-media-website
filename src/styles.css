@@ -1,0 +1,351 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Hello Media — Luxury Executive Design System
+ * Dark navy base with luxury gold accents.
+ * All colors use oklch.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Manrope", "Inter", ui-sans-serif, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+}
+
+:root {
+  --radius: 0.875rem;
+
+  /* Near-black base */
+  --background: oklch(0.09 0.004 285);
+  /* Charcoal surface */
+  --surface: oklch(0.16 0.006 285);
+  --foreground: oklch(1 0 0);
+
+  /* Card grey */
+  --card: oklch(0.19 0.006 285);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.19 0.006 285);
+  --popover-foreground: oklch(1 0 0);
+
+  /* Accent lime — reserved for primary CTAs only */
+  --gold: #dcff00;
+  /* Brighter highlight variant */
+  --gold-soft: #e6ff4d;
+
+
+  --primary: var(--gold);
+  --primary-foreground: oklch(0.09 0.004 285);
+
+  --secondary: oklch(0.22 0.006 285);
+  --secondary-foreground: oklch(1 0 0);
+
+  --muted: oklch(0.2 0.005 285);
+  /* Secondary text, cool light grey */
+  --muted-foreground: oklch(0.78 0.008 285);
+
+  --accent: var(--gold);
+  --accent-foreground: oklch(0.09 0.004 285);
+
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(1 0 0 / 0.08);
+  --border-strong: oklch(1 0 0 / 0.16);
+  --input: oklch(1 0 0 / 0.1);
+  --ring: var(--gold);
+
+  --shadow-luxe: 0 30px 80px -20px oklch(0 0 0 / 0.6);
+  --shadow-gold: 0 20px 60px -20px oklch(0.8 0.15 98 / 0.35);
+
+  /* Sanny-style hero: near-black top dissolving into a broad silver fog.
+     Sampled against the reference: #0b0b0c top → ~#3a3b3d at 2/3 → ~#a3a4a6 bottom. */
+  --gradient-hero: radial-gradient(
+      140% 60% at 50% 115%,
+      oklch(0.78 0 0 / 0.45) 0%,
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      #0b0b0c 0%,
+      #0c0c0d 34%,
+      #17181a 48%,
+      #2b2c2e 60%,
+      #4a4b4d 72%,
+      #6f7072 83%,
+      #8f9092 92%,
+      #a3a4a6 100%
+    );
+  /* Yellow tint — reserved for the primary CTA only */
+  --gradient-gold: linear-gradient(
+    135deg,
+    oklch(0.88 0.15 97),
+    oklch(0.78 0.16 96)
+  );
+  /* Silver — used for headline highlights (mostly white) */
+  --gradient-silver: linear-gradient(
+    180deg,
+    oklch(1 0 0) 0%,
+    oklch(0.72 0 0) 100%
+  );
+  /* Sanny hero headline mask: bright at the lower left, dimming toward
+     the top and right (matches the reference's "Title mask"). */
+  --gradient-hero-title: radial-gradient(
+    135% 145% at 16% 96%,
+    #ffffff 34%,
+    rgba(255, 255, 255, 0.62) 72%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  --gradient-divider: linear-gradient(
+    90deg,
+    transparent,
+    oklch(1 0 0 / 0.18),
+    transparent
+  );
+  --gradient-page: linear-gradient(
+    180deg,
+    oklch(0.05 0.002 285) 0%,
+    oklch(0.04 0.002 285) 60%,
+    oklch(0.03 0.002 285) 100%
+  );
+}
+
+/* Dark class matches root — this is a dark-first site */
+.dark {
+  --background: oklch(0.09 0.004 285);
+  --foreground: oklch(1 0 0);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--gradient-page) fixed;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+  }
+}
+
+@utility container-luxe {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  max-width: 80rem;
+}
+
+@utility text-gradient-gold {
+  background: var(--gradient-silver);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-hero-title {
+  background: var(--gradient-hero-title);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility font-hero {
+  font-family: "Outfit", "Inter", ui-sans-serif, sans-serif;
+}
+
+/* Sanny primary CTA — flat lime, 8px corners, dark text */
+@utility btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: var(--gold);
+  color: rgb(5 6 7);
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+@utility btn-gold {
+  &:hover {
+    transform: translateY(-1px) scale(1.02);
+    filter: brightness(1.04);
+  }
+}
+
+/* Secondary button — monochrome white outline (Sanny ghost) */
+@utility btn-outline-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.55rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgb(255 255 255 / 0.9);
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+@utility btn-outline-gold {
+  &:hover {
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.4);
+    color: #fff;
+  }
+}
+
+/* Sanny surface card — flat #18191b, generous radius, no glow */
+@utility card-luxe {
+  background: rgb(24 25 27);
+  border: 1px solid rgb(255 255 255 / 0.05);
+  border-radius: 1.75rem;
+  transition: transform 0.35s ease, border-color 0.35s ease;
+}
+@utility card-luxe {
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgb(255 255 255 / 0.14);
+  }
+}
+@utility card-luxe-glow {
+  &:hover {
+    transform: translateY(-6px);
+    border-color: rgb(255 255 255 / 0.2);
+  }
+}
+
+@utility divider-gold {
+  height: 1px;
+  width: 100%;
+  background: var(--gradient-divider);
+}
+
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: oklch(0.82 0.005 285);
+}
+
+@utility hero-bg {
+  background: var(--gradient-hero);
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@utility animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+@utility animate-marquee-reverse {
+  animation: marquee 40s linear infinite reverse;
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-14px) translateX(6px);
+  }
+}
+@utility animate-float-slow {
+  animation: float-slow 9s ease-in-out infinite;
+}
+
+@keyframes shimmer-gold {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Slow decorative rotation (Sanny's spinning icon) */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@utility animate-spin-slow {
+  animation: spin-slow 14s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-spin-slow,
+  .animate-float-slow {
+    animation: none;
+  }
+}
