@@ -209,24 +209,27 @@ const navLinks = [
   { label: "Insights", href: "#insights" },
 ];
 
+function BrandMark() {
+  return (
+    <a
+      href="#top"
+      aria-label="Hello Media — back to top"
+      className="absolute left-7 top-5 z-20 sm:left-12 sm:top-[38px] lg:left-16"
+    >
+      <span
+        className="whitespace-nowrap font-hero text-[28px] font-extrabold tracking-[-0.01em] sm:text-[34px]"
+        style={{ color: "#D8E312" }}
+      >
+        Hello Media
+      </span>
+    </a>
+  );
+}
+
 function Navbar() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 pt-6 sm:px-8 sm:pt-12 lg:px-12">
-      {/* Left: wordmark (no logo) */}
-      <a
-        href="#top"
-        aria-label="Hello Media — back to top"
-        className="pointer-events-auto ml-3 flex items-center sm:ml-10"
-      >
-        <span
-          className="whitespace-nowrap font-hero text-[20px] font-extrabold tracking-[-0.01em]"
-          style={{ color: "#D8E312" }}
-        >
-          Hello Media
-        </span>
-      </a>
-
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-end px-5 pt-6 sm:px-8 sm:pt-12 lg:px-12">
       <nav
         aria-label="Primary"
         className="pointer-events-auto relative flex items-center gap-8 rounded-full py-2 pl-8 pr-2 sm:mr-6 lg:mr-16"
@@ -367,6 +370,7 @@ function Hero() {
   return (
     <div id="top" className="px-0 pt-6">
       <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center">
+      <BrandMark />
       <section
         className="relative z-[4] flex w-full min-h-[80svh] flex-col items-center justify-between overflow-hidden rounded-[32px] px-5 pb-5 pt-10 sm:h-auto sm:min-h-[min(760px,calc(100svh-160px))] sm:justify-start sm:px-3 sm:pb-[clamp(48px,7vh,80px)] sm:pt-7 md:px-8 xl:px-[110px]"
         style={{
