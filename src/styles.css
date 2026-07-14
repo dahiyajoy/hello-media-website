@@ -218,39 +218,40 @@
 /* Left → right sweep (~2s), then hold ~1s before the next pass */
 @keyframes text-shine {
   0% {
-    background-position: -100% center, 0% center;
+    background-position: -120% center, 0% center;
   }
-  66.7%,
+  82%,
   100% {
-    background-position: 200% center, 0% center;
+    background-position: 220% center, 0% center;
   }
 }
 
 @utility text-shine {
   background-image:
     linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.65) 30%,
+      115deg,
+      rgba(255, 255, 255, 0) 38%,
+      rgba(255, 255, 255, 0.85) 47%,
       #ffffff 50%,
-      rgba(255, 255, 255, 0.65) 70%,
-      rgba(255, 255, 255, 0) 100%
+      rgba(255, 255, 255, 0.85) 53%,
+      rgba(255, 255, 255, 0) 62%
     ),
     linear-gradient(
-      100deg,
-      #ffffff 0%,
-      #f2f2f2 35%,
-      #8a8a8a 70%,
-      #6b6b6b 100%
+      175deg,
+      #9a9a9a 0%,
+      #b6b6b6 30%,
+      #d2d2d2 58%,
+      #ededed 84%,
+      #ffffff 100%
     );
-  background-size: 60% 100%, 100% 100%;
+  background-size: 45% 100%, 100% 100%;
   background-repeat: no-repeat, no-repeat;
-  background-position: -100% center, 0% center;
+  background-position: -120% center, 0% center;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: text-shine 3s ease-in-out infinite;
+  animation: text-shine 11s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 /* Sanny primary CTA — flat lime, 8px corners, dark text */

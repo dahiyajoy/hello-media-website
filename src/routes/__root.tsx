@@ -111,13 +111,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Sans:wght@500;600;700&display=swap",
       },
-      { rel: "preconnect", href: "https://prod.spline.design", crossOrigin: "anonymous" },
-      {
-        rel: "preload",
-        href: "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode",
-        as: "fetch",
-        crossOrigin: "anonymous",
-      },
     ],
   }),
   shellComponent: RootShell,

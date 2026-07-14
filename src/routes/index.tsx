@@ -33,9 +33,6 @@ import {
   UtensilsCrossed,
   Briefcase,
 } from "lucide-react";
-import { InteractiveRobotSpline } from "@/components/ui/interactive-3d-robot";
-
-const ROBOT_SCENE_URL = "https://prod.spline.design/PyzDhpQ9E5f1E3MT/scene.splinecode";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -215,10 +212,24 @@ const navLinks = [
 function Navbar() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-end pr-5 pt-6 sm:justify-center sm:pr-0 sm:pt-12">
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 pt-6 sm:px-8 sm:pt-12 lg:px-12">
+      {/* Left: wordmark (no logo) */}
+      <a
+        href="#top"
+        aria-label="Hello Media — back to top"
+        className="pointer-events-auto ml-3 flex items-center sm:ml-10"
+      >
+        <span
+          className="whitespace-nowrap font-hero text-[20px] font-extrabold tracking-[-0.01em]"
+          style={{ color: "#D8E312" }}
+        >
+          Hello Media
+        </span>
+      </a>
+
       <nav
         aria-label="Primary"
-        className="pointer-events-auto relative flex items-center gap-8 rounded-full py-2 pl-8 pr-2"
+        className="pointer-events-auto relative flex items-center gap-8 rounded-full py-2 pl-8 pr-2 sm:mr-6 lg:mr-16"
         style={{
           background: "rgba(255,255,255,0.11)",
           backdropFilter: "blur(16px)",
@@ -250,7 +261,7 @@ function Navbar() {
 
         <a
           href="#contact"
-          className="whitespace-nowrap rounded-full bg-white px-6 py-3.5 text-[18px] font-semibold text-[#050505] transition-[transform,background-color] duration-300 ease-out hover:scale-[1.03] hover:bg-[#d9dbde]"
+          className="whitespace-nowrap rounded-full bg-white px-6 py-3.5 text-[18px] font-semibold text-[#050505] transition-colors duration-300 ease-out hover:bg-[#d9dbde]"
         >
           Contact
         </a>
@@ -285,6 +296,73 @@ function Navbar() {
 
 /* ─────────────── Hero ─────────────── */
 
+const HERO_STATS = [
+  { value: 300, suffix: "%", label: "Avg revenue growth" },
+  { value: 95, suffix: "%", label: "Client retention" },
+  { value: 20, suffix: "+", label: "Years scaling brands" },
+];
+
+function HeroStat({
+  value,
+  suffix,
+  label,
+  delay,
+}: {
+  value: number;
+  suffix: string;
+  label: string;
+  delay: number;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: "-40px" });
+  const v = useCounter(value, inView, 1500, delay);
+  return (
+    <div ref={ref}>
+      <div className="font-hero text-[clamp(38px,3.4vw,54px)] font-black leading-none tracking-[-0.03em] tabular-nums text-white">
+        {Math.round(v)}
+        {suffix}
+      </div>
+      <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/45">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function HeroResultsRail() {
+  return (
+    <div className="pointer-events-none absolute right-[clamp(40px,5vw,120px)] top-1/2 z-[2] hidden -translate-y-1/2 flex-col items-end gap-8 text-right xl:flex">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/45">
+        Proven results
+      </div>
+      {HERO_STATS.map((s, i) => (
+        <div key={s.label} className="flex flex-col items-end">
+          {i > 0 && <span className="mb-8 h-px w-[132px] bg-white/12" />}
+          <HeroStat {...s} delay={220 + i * 160} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TrustBadge() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: "-40px" });
+  const v = useCounter(500, inView, 1500, 300);
+  return (
+    <span
+      ref={ref}
+      className="max-w-[178px] text-[13px] font-medium leading-[1.2] text-white/85 sm:text-[14px]"
+    >
+      Trusted by{" "}
+      <span className="font-hero font-bold tabular-nums text-white">
+        {Math.round(v)}+
+      </span>{" "}
+      businesses worldwide
+    </span>
+  );
+}
+
 function Hero() {
   return (
     <div id="top" className="px-0 pt-6">
@@ -296,20 +374,7 @@ function Hero() {
             "linear-gradient(180deg, #111214 0%, #111214 50%, #a4abad 100%)",
         }}
       >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[clamp(48px,9vh,110px)] right-0 top-[clamp(64px,10vh,120px)] z-[1] hidden w-[55%] max-w-[780px] sm:block"
-          style={{
-            filter: "grayscale(1) brightness(1.6) contrast(1.05)",
-            mixBlendMode: "screen",
-          }}
-        >
-          <div className="pointer-events-auto absolute inset-0">
-            <InteractiveRobotSpline scene={ROBOT_SCENE_URL} className="!h-full !w-full" />
-          </div>
-        </div>
-
-        <div className="relative z-[2] flex w-full flex-1 flex-col justify-between pl-0 sm:mt-[clamp(104px,19vh,230px)] sm:justify-start sm:pl-[clamp(20px,4vw,80px)]">
+        <div className="relative z-[2] flex w-full flex-1 flex-col items-start justify-between text-left sm:mt-[clamp(104px,19vh,230px)] sm:justify-start sm:px-[clamp(20px,4vw,80px)]">
           <div className="mt-14 flex flex-col items-start justify-start sm:mt-0">
             <Reveal className="w-full">
               <h1
@@ -337,16 +402,16 @@ function Hero() {
             </Reveal>
           </div>
 
-          <div className="mt-0 flex w-full flex-col items-start gap-5 sm:mt-[clamp(24px,4vh,56px)] sm:gap-[40px]">
-            <Reveal delay={0.1}>
+          <div className="mt-0 flex w-full flex-col items-start gap-8 sm:mt-[clamp(24px,4vh,56px)] sm:gap-[40px]">
+            <Reveal delay={0.1} className="w-full">
               <p className="max-w-[560px] text-[15px] sm:text-[17px] leading-[1.4] text-white/[0.72]">
                 Building future-ready businesses through strategic consulting,
                 branding, AI marketing, and go-to-market execution.
               </p>
             </Reveal>
 
-            <Reveal delay={0.18}>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-5 sm:gap-[34px]">
+            <Reveal delay={0.18} className="w-full">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-5 sm:gap-[28px]">
                 <motion.a
                   href="#contact"
                   className="rounded-[8px] px-[22px] py-[15px] sm:px-[26px] sm:py-[17px] font-hero text-[15px] sm:text-[16px] font-extrabold text-[#0B0C0E]"
@@ -366,9 +431,7 @@ function Hero() {
                 </a>
 
                 <div className="flex items-center gap-[14px] sm:ml-1 sm:gap-[18px]">
-                  <span className="max-w-[170px] text-[13px] sm:text-[14px] leading-[1.2] text-white/85">
-                    Trusted by 500+ businesses worldwide
-                  </span>
+                  <TrustBadge />
 
                   <motion.a
                     href="#case-studies"
@@ -385,6 +448,8 @@ function Hero() {
             </Reveal>
           </div>
         </div>
+
+        <HeroResultsRail />
       </section>
 
       <div
@@ -992,7 +1057,6 @@ const caseThemes = [
   {
     article: "bg-white border-black/10",
     kicker: "text-black/50",
-    dot: "bg-[#b8c400]",
     chipVal: "text-[#0a0a0a]",
     chipLabel: "text-black/45",
     title: "text-[#0a0a0a]",
@@ -1004,7 +1068,6 @@ const caseThemes = [
   {
     article: "bg-[#1e1f22] border-white/[0.08]",
     kicker: "text-white/50",
-    dot: "bg-[#D8E312]",
     chipVal: "text-white",
     chipLabel: "text-white/45",
     title: "text-white",
@@ -1016,7 +1079,6 @@ const caseThemes = [
   {
     article: "bg-[#131417] border-white/[0.07]",
     kicker: "text-white/50",
-    dot: "bg-[#D8E312]",
     chipVal: "text-white",
     chipLabel: "text-white/45",
     title: "text-white",
@@ -1090,8 +1152,7 @@ function CaseStudies() {
               <article className={`overflow-hidden grid lg:grid-cols-[1.1fr_1.4fr] gap-0 rounded-[2rem] border shadow-[0_24px_64px_rgba(0,0,0,0.35)] ${t.article}`}>
                 <div className="relative flex min-h-[240px] flex-col justify-between overflow-hidden p-7 sm:p-9 lg:min-h-full lg:p-12">
                   <div className="relative">
-                    <div className={`flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.3em] ${t.kicker}`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${t.dot}`} />
+                    <div className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${t.kicker}`}>
                       {c.industry}
                     </div>
                     <h3 className={`mt-5 sm:mt-7 font-hero text-2xl sm:text-3xl lg:text-4xl font-bold leading-[1.08] tracking-[-0.02em] ${t.title}`}>
