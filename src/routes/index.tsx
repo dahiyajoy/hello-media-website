@@ -1,4 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import discoverBgAsset from "@/assets/discover-bg.png.asset.json";
+import researchBgAsset from "@/assets/research-bg.png.asset.json";
+import strategyBgAsset from "@/assets/strategy-bg.png.asset.json";
+import brandBgAsset from "@/assets/brand-bg.png.asset.json";
+import growthBgAsset from "@/assets/growth-bg.png.asset.json";
+import scaleBgAsset from "@/assets/scale-bg.png.asset.json";
+import insightStrategyAsset from "@/assets/insight-strategy.png.asset.json";
+import insightGrowthMistakesAsset from "@/assets/insight-growth-mistakes.png.asset.json";
+import insightAiAsset from "@/assets/insight-ai-bw.png.asset.json";
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
@@ -20,8 +30,7 @@ import {
   Linkedin,
   Instagram,
   Mail,
-  Menu,
-  X,
+  Phone,
   Check,
   Cpu,
   Sparkles,
@@ -33,6 +42,48 @@ import {
   UtensilsCrossed,
   Briefcase,
 } from "lucide-react";
+
+/**
+ * On touch devices (no hover capability), activate a hover-equivalent state
+ * when the element is scrolled near the middle of the viewport. Desktop is
+ * unchanged — hover keeps working as before.
+ */
+function useTouchInViewActive<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+  const [tapped, setTapped] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isTouch =
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    if (!isTouch) return;
+    const el = ref.current;
+    if (!el) return;
+    // Activate whenever any part of the card overlaps a horizontal band
+    // through the middle ~50% of the viewport. Using threshold 0 and a
+    // symmetric rootMargin means large cards still trigger on mobile.
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) setInView(entry.isIntersecting);
+      },
+      { rootMargin: "-25% 0px -25% 0px", threshold: 0 },
+    );
+    io.observe(el);
+    // Clear a tap-hold as soon as the card leaves the middle band, so
+    // scroll-driven activation stays in sync across cards.
+    const onScroll = () => setTapped(false);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+  const handlers = {
+    onPointerDown: () => setTapped(true),
+  };
+  return { ref, active: inView || tapped, handlers };
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -64,17 +115,21 @@ function Reveal({
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: false, margin: "-80px" });
+  // The observed wrapper stays static; only the inner element translates.
+  // Observing the translating element itself makes it cross its own trigger
+  // boundary and oscillate ("vibrate") when it sits right at the margin.
   return (
-    <motion.div
-      ref={ref}
-      variants={fadeUp}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-      transition={{ duration: 0.55, delay, ease: EASE }}
-      className={className}
-    >
-      {children}
-    </motion.div>
+    <div ref={ref} className={className}>
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        transition={{ duration: 0.55, delay, ease: EASE }}
+        className="h-full"
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 }
 
@@ -217,7 +272,7 @@ function BrandMark() {
       className="absolute left-7 top-5 z-20 sm:left-12 sm:top-[38px] lg:left-16"
     >
       <span
-        className="whitespace-nowrap font-hero text-[28px] font-extrabold tracking-[-0.01em] sm:text-[34px]"
+        className="whitespace-nowrap font-hero text-[22px] font-extrabold tracking-[-0.01em] lg:text-[34px]"
         style={{ color: "#D8E312" }}
       >
         Hello Media
@@ -240,12 +295,12 @@ function Navbar() {
           fontFamily: "'Instrument Sans', 'Inter', sans-serif",
         }}
       >
-        <div className="hidden items-center gap-8 sm:flex">
+        <div className="hidden items-center gap-8 lg:flex">
           {navLinks.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="whitespace-nowrap text-[18px] font-semibold tracking-[-0.01em] text-white transition-colors duration-300 ease-out hover:text-[#9b9ea3]"
+              className="whitespace-nowrap text-[18px] font-semibold tracking-[-0.01em] text-white transition-colors duration-300 ease-out hover:text-[#D8E312]"
             >
               {l.label}
             </a>
@@ -257,14 +312,28 @@ function Navbar() {
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label="Toggle menu"
-          className="p-0.5 text-white sm:hidden"
+          className="relative grid h-7 w-7 place-items-center text-white lg:hidden"
         >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <motion.span
+            className="absolute block h-[2px] w-[22px] rounded-full bg-current"
+            animate={open ? { rotate: 45, y: 0 } : { rotate: 0, y: -6.5 }}
+            transition={{ duration: 0.32, ease: EASE }}
+          />
+          <motion.span
+            className="absolute block h-[2px] w-[22px] rounded-full bg-current"
+            animate={open ? { opacity: 0, scaleX: 0.3 } : { opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.22, ease: EASE }}
+          />
+          <motion.span
+            className="absolute block h-[2px] w-[22px] rounded-full bg-current"
+            animate={open ? { rotate: -45, y: 0 } : { rotate: 0, y: 6.5 }}
+            transition={{ duration: 0.32, ease: EASE }}
+          />
         </button>
 
         <a
           href="#contact"
-          className="whitespace-nowrap rounded-full bg-white px-6 py-3.5 text-[18px] font-semibold text-[#050505] transition-colors duration-300 ease-out hover:bg-[#d9dbde]"
+          className="whitespace-nowrap rounded-full bg-white px-6 py-3.5 text-[18px] font-semibold text-[#050505] transition-[background-color,scale] duration-300 ease-out hover:bg-[#D8E312] hover:scale-[1.04]"
         >
           Contact
         </a>
@@ -276,7 +345,7 @@ function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.2 }}
-              className="absolute right-0 top-[calc(100%+12px)] flex w-[220px] flex-col gap-2.5 rounded-2xl p-3.5 sm:hidden"
+              className="absolute right-0 top-[calc(100%+12px)] flex w-[220px] flex-col gap-2.5 rounded-2xl p-3.5 lg:hidden"
               style={{ background: "rgba(17,18,20,0.95)" }}
             >
               {navLinks.map((l) => (
@@ -369,7 +438,7 @@ function TrustBadge() {
 function Hero() {
   return (
     <div id="top" className="px-0 pt-6">
-      <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center">
+      <div className="relative mx-auto flex w-full max-w-[1400px] flex-col items-center sm:w-[calc(100%-32px)] sm:max-w-[1880px]">
       <BrandMark />
       <section
         className="relative z-[4] flex w-full min-h-[80svh] flex-col items-center justify-between overflow-hidden rounded-[32px] px-5 pb-5 pt-10 sm:h-auto sm:min-h-[min(760px,calc(100svh-160px))] sm:justify-start sm:px-3 sm:pb-[clamp(48px,7vh,80px)] sm:pt-7 md:px-8 xl:px-[110px]"
@@ -456,9 +525,11 @@ function Hero() {
         <HeroResultsRail />
       </section>
 
+      {/* Stacked-sheet effect: on phones the inset per layer is exaggerated
+          (90/80/70%) so the steps stay visible at narrow widths. */}
       <div
         aria-hidden
-        className="relative z-[3] w-[96%]"
+        className="relative z-[3] w-[90%] sm:w-[96%]"
         style={{
           height: 10,
           background: "#34363b",
@@ -468,7 +539,7 @@ function Hero() {
       />
       <div
         aria-hidden
-        className="relative z-[2] w-[92%]"
+        className="relative z-[2] w-[80%] sm:w-[92%]"
         style={{
           height: 9,
           background: "#25272b",
@@ -478,7 +549,7 @@ function Hero() {
       />
       <div
         aria-hidden
-        className="relative z-[1] w-[88%]"
+        className="relative z-[1] w-[70%] sm:w-[88%]"
         style={{
           height: 8,
           background: "#141518",
@@ -537,7 +608,7 @@ function Trust() {
   ];
 
   return (
-    <section className="py-16 sm:py-24 lg:py-28">
+    <section className="py-10 sm:py-14 lg:py-18">
       <div className="container-luxe">
         <Reveal>
           <p className="text-center text-sm font-light tracking-wide text-white/45">
@@ -581,6 +652,9 @@ function Section({
   children,
   center,
   introWide,
+  className,
+  contentClassName,
+  compact,
 }: {
   id?: string;
   eyebrow?: string;
@@ -589,9 +663,12 @@ function Section({
   children: React.ReactNode;
   center?: boolean;
   introWide?: boolean;
+  className?: string;
+  contentClassName?: string;
+  compact?: boolean;
 }) {
   return (
-    <section id={id} className="py-16 sm:py-24 lg:py-32 relative">
+    <section id={id} className={cn("py-10 sm:py-14 lg:py-20 relative", className)}>
       <div className="container-luxe">
         {(eyebrow || title || intro) && (
           <div>
@@ -604,7 +681,7 @@ function Section({
                 )}
                 {title && (
                   <Reveal delay={0.08}>
-                    <h2 className="mt-5 font-hero font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.03em]">
+                    <h2 className={cn("font-hero font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.03em]", compact ? "mt-3" : "mt-5")}>
                       {title}
                     </h2>
                   </Reveal>
@@ -613,14 +690,14 @@ function Section({
             )}
             {intro && (
               <Reveal delay={0.16}>
-                <div className={`mt-6 text-lg font-light text-muted-foreground leading-relaxed ${introWide ? "max-w-[52rem]" : "max-w-3xl"} ${center ? "mx-auto text-center" : ""}`}>
+                <div className={cn(`text-lg font-light text-muted-foreground leading-relaxed ${introWide ? "max-w-[52rem]" : "max-w-3xl"} ${center ? "mx-auto text-center" : ""}`, compact ? "mt-3" : "mt-6")}>
                   {intro}
                 </div>
               </Reveal>
             )}
           </div>
         )}
-        <div className={eyebrow || title ? "mt-16" : ""}>{children}</div>
+        <div className={eyebrow || title ? cn(compact ? "mt-6" : "mt-10", contentClassName) : contentClassName}>{children}</div>
       </div>
     </section>
   );
@@ -648,6 +725,7 @@ function About() {
       id="about"
       eyebrow="Who We Are"
       introWide
+      className="pb-6 sm:pb-8 lg:pb-10"
       title={
         <>
           We Build{" "}
@@ -667,7 +745,7 @@ function About() {
             <motion.div
               whileHover={{ y: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
-              className="group relative flex h-full min-h-[280px] sm:min-h-[380px] flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.05] bg-[#18191b] p-7 pb-9 sm:p-10 sm:pb-12 transition-colors duration-300 hover:border-transparent hover:bg-white"
+              className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/[0.05] bg-[#18191b] p-7 pb-7 sm:p-10 sm:pb-8 transition-colors duration-300 hover:border-transparent hover:bg-white"
             >
               <span
                 aria-hidden
@@ -691,7 +769,7 @@ function About() {
 
 function Philosophy() {
   return (
-    <section className="py-16 sm:py-24 lg:py-32 relative">
+    <section className={cn("py-10 sm:py-14 lg:py-20 relative", "pt-6 sm:pt-8 lg:pt-10")}>
       <div className="container-luxe max-w-5xl">
         <Reveal>
           <Eyebrow>Our Philosophy</Eyebrow>
@@ -730,23 +808,70 @@ function Process() {
       intro="Every engagement follows a disciplined path, from insight to compounding growth."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {processSteps.map((s, i) => (
-          <Reveal key={s.title} delay={(i % 3) * 0.07} className="h-full">
-            <div className="group h-full rounded-[1.75rem] border border-white/[0.05] bg-[#18191b] p-6 sm:p-8 transition-colors duration-300 hover:bg-white cursor-default">
-              <span className="inline-flex items-center rounded-full border border-white/15 px-4 py-1.5 text-[13px] font-medium text-white/70 transition-colors duration-300 group-hover:border-black/20 group-hover:text-[rgb(5,6,7)]/70">
-                Step {i + 1}
-              </span>
-              <h3 className="mt-6 font-hero text-2xl sm:text-3xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-[rgb(5,6,7)]">
-                {s.title}
-              </h3>
-              <p className="mt-2 text-muted-foreground font-light transition-colors duration-300 group-hover:text-[rgb(5,6,7)]/60">
-                {s.sub}
-              </p>
-            </div>
-          </Reveal>
-        ))}
+        {processSteps.map((s, i) => {
+          const bgUrl =
+            i === 0
+              ? discoverBgAsset.url
+              : i === 1
+                ? researchBgAsset.url
+                : i === 2
+                  ? strategyBgAsset.url
+                  : i === 3
+                    ? brandBgAsset.url
+                    : i === 4
+                      ? growthBgAsset.url
+                      : i === 5
+                        ? scaleBgAsset.url
+                        : undefined;
+          return (
+            <Reveal key={s.title} delay={(i % 3) * 0.07} className="h-full">
+              <ProcessCard step={s} index={i} bgUrl={bgUrl} />
+            </Reveal>
+          );
+        })}
       </div>
     </Section>
+  );
+}
+
+function ProcessCard({
+  step,
+  index,
+  bgUrl,
+}: {
+  step: { title: string; sub: string };
+  index: number;
+  bgUrl?: string;
+}) {
+  const { ref, active, handlers } = useTouchInViewActive<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      {...handlers}
+      data-active={active ? "true" : undefined}
+      className="group h-full cursor-default"
+    >
+      <div className="relative h-full overflow-hidden rounded-[1.75rem] border border-white/[0.05] bg-[#18191b] transition-all duration-300 ease-out group-hover:-translate-y-2 group-data-[active=true]:-translate-y-2 group-hover:border-[#D8E312]/40 group-hover:shadow-[0_20px_60px_-15px_rgba(216,227,18,0.18)] group-data-[active=true]:border-[#D8E312]/40 group-data-[active=true]:shadow-[0_20px_60px_-15px_rgba(216,227,18,0.18)]">
+        {bgUrl && (
+          <>
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-300 ease-out group-hover:scale-105 group-data-[active=true]:scale-105"
+              style={{ backgroundImage: `url(${bgUrl})` }}
+            />
+            <div className="absolute inset-0 bg-black/55 transition-colors duration-300 ease-out group-hover:bg-black/65 group-data-[active=true]:bg-black/65" />
+          </>
+        )}
+        <div className="relative z-10 p-6 sm:p-8">
+          <span className="inline-flex items-center rounded-full border border-white/15 px-4 py-1.5 text-[13px] font-medium text-white/70 transition-colors duration-300 group-hover:border-[#D8E312]/50 group-hover:text-[#D8E312] group-data-[active=true]:border-[#D8E312]/50 group-data-[active=true]:text-[#D8E312]">
+            Step {index + 1}
+          </span>
+          <h3 className="mt-6 font-hero text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+            {step.title}
+          </h3>
+          <p className="mt-2 font-light text-white/60">{step.sub}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -993,7 +1118,7 @@ function Metric({
 
 function Outcomes() {
   return (
-    <section className="py-16 sm:py-24 lg:py-32 relative border-y border-white/[0.06]">
+    <section className="py-10 sm:py-14 lg:py-20 relative border-y border-white/[0.06]">
       <div className="container-luxe">
         <div className="max-w-2xl">
           <Reveal>
@@ -1022,41 +1147,45 @@ function Outcomes() {
 
 const cases = [
   {
-    industry: "SaaS",
-    title: "From product-led plateau to category leadership",
-    challenge: "A vertical SaaS platform hit a growth ceiling at $8M ARR.",
-    strategy: "Repositioned the brand, built an ABM engine, and rebuilt GTM around ICP economics.",
-    execution: "12-month engagement across brand, content, paid, and lifecycle.",
+    industry: "Manufacturing",
+    title: "Building a Unified Brand Experience for an International Manufacturer",
+    challenge: "Unify brand communication across products, dealers, and international markets.",
+    strategy: "Build a scalable brand system through unified branding, dealer marketing, and product communication.",
+    execution: "Delivered integrated branding, marketing collateral, and exhibition assets across digital and offline channels.",
+    href: "/case-studies/polytank-ghana",
     metrics: [
-      { k: "300%", v: "Revenue Growth" },
-      { k: "8×", v: "ROAS" },
+      { k: "30+ Years", v: "Manufacturing Excellence" },
+      { k: "Global Presence", v: "International Trade Exhibitions" },
     ],
   },
   {
-    industry: "D2C",
-    title: "Rebuilding a heritage brand for the modern buyer",
-    challenge: "A legacy consumer brand losing share to digital-native challengers.",
-    strategy: "New brand architecture, DTC website, AI-personalized lifecycle, and creator engine.",
-    execution: "Full-funnel rebuild across brand, ecommerce, and performance.",
+    industry: "Education",
+    title: "Modernizing a Leading Educational Institution",
+    challenge: "Modernize admissions and create a scalable digital education ecosystem.",
+    strategy: "Unify branding, admission marketing, lead generation, and automation.",
+    execution: "Delivered campaigns, CRM integration, automation, and performance marketing.",
+    href: "/case-studies/sunder-deep",
     metrics: [
-      { k: "500%", v: "Lead Growth" },
-      { k: "120%", v: "Organic Traffic" },
+      { k: "20+ Years", v: "Academic Excellence" },
+      { k: "Admission Automation", v: "Traditional & Digital Lead Generation" },
     ],
   },
   {
-    industry: "AI Startup",
-    title: "Zero-to-one GTM for an enterprise AI platform",
-    challenge: "Seed-stage AI company launching into a crowded enterprise category.",
-    strategy: "Founder positioning, category narrative, ABM motion, and pipeline design.",
-    execution: "Fractional CMO engagement through Series A.",
+    industry: "Corporate Branding",
+    title: "Strengthening Brand Visibility Through Corporate Communications",
+    challenge: "Build stronger public visibility while showcasing the company's values through meaningful offline branding and CSR communication.",
+    strategy: "Create a unified corporate communication approach combining brand visibility, CSR storytelling, and experiential brand activation.",
+    execution: "Delivered corporate branding assets, CSR campaign communication, event branding, employee engagement creatives, and offline visibility initiatives.",
+    href: "/case-studies/masco-foods",
     metrics: [
-      { k: "$4.2M", v: "Pipeline in 90 days" },
-      { k: "6×", v: "Qualified Meetings" },
+      { k: "25+ Years", v: "Corporate Presence" },
+      { k: "CSR & Brand", v: "Offline Visibility" },
     ],
   },
+
 ];
 
-/* Whole-card themes: white → graphite → near-black, lime as a small accent only */
+/* Whole-card themes: white → brand yellow → black */
 const caseThemes = [
   {
     article: "bg-white border-black/10",
@@ -1070,18 +1199,18 @@ const caseThemes = [
     rule: "border-black/10",
   },
   {
-    article: "bg-[#1e1f22] border-white/[0.08]",
-    kicker: "text-white/50",
-    chipVal: "text-white",
-    chipLabel: "text-white/45",
-    title: "text-white",
-    label: "text-white/40",
-    body: "text-white/60",
-    link: "text-white/70 hover:text-white",
-    rule: "border-white/10",
+    article: "bg-[#D8E312] border-black/10",
+    kicker: "text-black/50",
+    chipVal: "text-[#0a0a0a]",
+    chipLabel: "text-black/45",
+    title: "text-[#0a0a0a]",
+    label: "text-black/40",
+    body: "text-black/65",
+    link: "text-black/70 hover:text-black",
+    rule: "border-black/10",
   },
   {
-    article: "bg-[#131417] border-white/[0.07]",
+    article: "bg-black border-white/[0.08]",
     kicker: "text-white/50",
     chipVal: "text-white",
     chipLabel: "text-white/45",
@@ -1111,18 +1240,19 @@ function CaseMetric({
   // card is fully off-screen, never while it's still scrolling past.
   const inView = useInView(ref, { once: false, amount: "some" });
   const m = raw.match(/^([^\d.]*)([\d.]+)(.*)$/);
+  const isNumeric = !!m;
   const prefix = m ? m[1] : "";
   const target = m ? parseFloat(m[2]) : 0;
   const suffix = m ? m[3] : "";
   const decimals = m && m[2].includes(".") ? 1 : 0;
   const v = useCounter(target, inView, 1200, delay);
-  const display = decimals ? v.toFixed(1) : Math.round(v).toString();
+  const display = isNumeric ? (decimals ? v.toFixed(1) : Math.round(v).toString()) : raw;
   return (
     <div ref={ref}>
       <div className={`font-hero text-3xl sm:text-4xl font-bold tracking-[-0.02em] tabular-nums ${chipVal}`}>
-        {prefix}
+        {isNumeric && prefix}
         {display}
-        {suffix}
+        {isNumeric && suffix}
       </div>
       <div className={`mt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${chipLabel}`}>
         {label}
@@ -1142,7 +1272,6 @@ function CaseStudies() {
           <span className="text-gradient-gold">markets.</span>
         </>
       }
-      intro="Selected engagements across SaaS, D2C, and enterprise AI."
     >
       <div className="space-y-8">
         {cases.map((c, i) => {
@@ -1153,7 +1282,7 @@ function CaseStudies() {
               className="lg:sticky"
               style={{ top: `${104 + i * 36}px` }}
             >
-              <article className={`overflow-hidden grid lg:grid-cols-[1.1fr_1.4fr] gap-0 rounded-[2rem] border shadow-[0_24px_64px_rgba(0,0,0,0.35)] ${t.article}`}>
+              <article className={`overflow-hidden grid lg:grid-cols-[1.1fr_1.4fr] gap-0 rounded-[2rem] border shadow-[0_24px_64px_rgba(0,0,0,0.35)] lg:min-h-[450px] ${t.article}`}>
                 <div className="relative flex min-h-[240px] flex-col justify-between overflow-hidden p-7 sm:p-9 lg:min-h-full lg:p-12">
                   <div className="relative">
                     <div className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${t.kicker}`}>
@@ -1193,13 +1322,24 @@ function CaseStudies() {
                       </div>
                     ))}
                   </div>
-                  <a
-                    href="#insights"
-                    className={`mt-9 inline-flex items-center gap-2 text-sm font-semibold transition group ${t.link}`}
-                  >
-                    Read full case study{" "}
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </a>
+                  {(c as { href?: string }).href && (
+                    <Link
+                      to={(c as { href?: string }).href!}
+                      preload="intent"
+                      onClick={() => {
+                        try {
+                          sessionStorage.setItem(
+                            "cs-return-y",
+                            String(window.scrollY),
+                          );
+                        } catch {}
+                      }}
+                      className={`mt-9 inline-flex items-center gap-2 text-sm font-semibold transition-all duration-300 ease-out group ${t.link}`}
+                    >
+                      Read full case study{" "}
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-1" />
+                    </Link>
+                  )}
                 </div>
               </article>
             </div>
@@ -1217,24 +1357,21 @@ const testimonials = [
     quote:
       "Hello Media rebuilt our entire growth engine. In 12 months we tripled revenue and finally look like the category leader we always claimed to be.",
     name: "Ananya Rao",
-    role: "CEO",
-    company: "Northwind SaaS",
+    role: "Chief Executive Officer",
     initials: "AR",
   },
   {
     quote:
       "They think like operators, not consultants. Every recommendation ties directly to pipeline, revenue, or enterprise value.",
     name: "Marcus Chen",
-    role: "Founder",
-    company: "Quanta AI",
+    role: "Founder & CEO",
     initials: "MC",
   },
   {
     quote:
       "The most strategic marketing partner we've ever worked with. They earned a permanent seat at our leadership table.",
     name: "Priya Menon",
-    role: "CMO",
-    company: "Meridian Health",
+    role: "Chief Marketing Officer",
     initials: "PM",
   },
 ];
@@ -1287,9 +1424,7 @@ function Testimonials() {
                 </div>
                 <div className="text-left">
                   <div className="font-semibold">{t.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {t.role} · {t.company}
-                  </div>
+                  <div className="text-sm text-muted-foreground">{t.role}</div>
                 </div>
               </div>
             </motion.div>
@@ -1319,24 +1454,38 @@ function Testimonials() {
 
 /* ─────────────── Insights ─────────────── */
 
-const insights = [
+const insights: Array<{
+  cat: string;
+  title: string;
+  desc: string;
+  time: string;
+  href?: string;
+  image?: string;
+}> = [
   {
-    cat: "Research",
-    title: "The 2026 State of AI-Led Growth",
-    desc: "How the top 5% of growth teams are using AI to compound insight, creative, and pipeline.",
-    time: "12 min read",
+    cat: "Strategy",
+      title:
+        "Why Most Businesses Don't Have a Marketing Problem: They Have a Strategy Problem",
+    desc: "Most businesses blame marketing when growth slows. In reality, the biggest bottleneck is often unclear positioning, weak differentiation, and the absence of a scalable business strategy. Discover why strategy, not marketing, is the true foundation of sustainable business growth.",
+    time: "8 min read",
+    href: "/insights/why-strategy-not-marketing",
+    image: insightStrategyAsset.url,
   },
   {
     cat: "Growth Guide",
-    title: "The Fractional CMO Playbook",
-    desc: "A field manual for founders scaling from $2M to $20M ARR without a full-time CMO.",
-    time: "9 min read",
+    title: "The 7 Growth Mistakes That Keep Businesses Stuck",
+    desc: "Growth rarely stops because of one big decision. It slows when small strategic mistakes compound over time. Discover the patterns that separate businesses that plateau from those that scale.",
+    time: "8 min read",
+    href: "/insights/7-growth-mistakes",
+    image: insightGrowthMistakesAsset.url,
   },
   {
     cat: "AI Insights",
-    title: "Beyond Prompts: Building AI Marketing Systems",
-    desc: "Why the winners aren't chasing tools, they're re-architecting the marketing stack.",
-    time: "7 min read",
+    title: "AI Won't Replace Great Marketing: It Will Replace Slow Businesses",
+    desc: "AI isn't replacing marketers. It's replacing slow execution. Discover how businesses use AI to accelerate research, content, automation, decision-making, and growth while keeping strategy at the center.",
+    time: "10 min read",
+    href: "/insights/ai-wont-replace-great-marketing",
+    image: insightAiAsset.url,
   },
 ];
 
@@ -1352,42 +1501,95 @@ function Insights() {
         </>
       }
       intro="Research, guides, and thinking for operators building enduring companies."
+      className="py-6 sm:py-8 lg:py-10"
+      contentClassName="mt-6"
+      compact
     >
       <div className="grid gap-6 md:grid-cols-3">
         {insights.map((a, i) => (
           <Reveal key={a.title} delay={i * 0.08}>
-            <article className="h-full flex flex-col group cursor-pointer overflow-hidden rounded-[2rem] border border-white/[0.05] bg-[#18191b] transition-[transform,border-color] duration-300 hover:-translate-y-1.5 hover:border-white/[0.14]">
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-white to-[#e7e9eb] transition-transform duration-700 ease-out group-hover:scale-110" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(0,0,0,0.05),transparent_60%)]" />
-                <div className="absolute -bottom-5 -right-3 font-hero font-black text-8xl tracking-[-0.05em] text-black/[0.07] select-none transition-transform duration-700 group-hover:-translate-y-3">
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <span className="absolute top-4 left-4 rounded-full bg-black/[0.06] backdrop-blur border border-black/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#0a0a0a]">
-                  {a.cat}
-                </span>
-              </div>
-              <div className="p-7 flex flex-col flex-1">
-                <h3 className="font-hero text-xl font-semibold leading-snug tracking-tight group-hover:text-white transition-colors">
-                  {a.title}
-                </h3>
-                <p className="mt-3 text-sm text-muted-foreground font-light leading-relaxed flex-1">
-                  {a.desc}
-                </p>
-                <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{a.time}</span>
-                  <span className="inline-flex items-center gap-1 text-white/70 group-hover:text-white group-hover:gap-2 transition-all">
-                    Read more <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </div>
-            </article>
+            <InsightCard a={a} index={i} />
           </Reveal>
         ))}
       </div>
     </Section>
   );
 }
+
+function InsightCard({
+  a,
+  index,
+}: {
+  a: (typeof insights)[number];
+  index: number;
+}) {
+  const { ref, active, handlers } = useTouchInViewActive<HTMLDivElement>();
+  return (
+    <div
+      ref={ref}
+      {...handlers}
+      data-active={active ? "true" : undefined}
+      className="group h-full"
+    >
+    <article
+      className="h-full flex flex-col cursor-pointer overflow-hidden rounded-[2rem] border border-white/[0.05] bg-[#18191b] shadow-[0_2px_10px_-6px_rgba(0,0,0,0.4)] transition-[transform,border-color,background-color,box-shadow] duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-[7px] group-hover:border-white/[0.14] group-hover:bg-[#1f2022] group-hover:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] group-data-[active=true]:-translate-y-[7px] group-data-[active=true]:border-white/[0.14] group-data-[active=true]:bg-[#1f2022] group-data-[active=true]:shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] will-change-transform"
+    >
+      <div className="relative aspect-[3/2] overflow-hidden">
+        {a.image ? (
+          <>
+            {/* Single image recolored via filter on hover — a separate gold
+                render never aligns pixel-perfectly, so recolor instead. */}
+            <img
+              src={a.image}
+              alt=""
+              className="absolute inset-0 block h-full w-full object-cover transition-[filter,scale] duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[filter,scale] group-hover:scale-[1.06] group-data-[active=true]:scale-[1.06] group-hover:[filter:sepia(1)_saturate(2.6)_brightness(1.04)] group-data-[active=true]:[filter:sepia(1)_saturate(2.6)_brightness(1.04)]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+            <span className="absolute top-4 left-4 rounded-full bg-black/40 backdrop-blur border border-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-white">
+              {a.cat}
+            </span>
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br from-white to-[#e7e9eb] transition-transform duration-700 ease-out group-hover:scale-110 group-data-[active=true]:scale-110" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(0,0,0,0.05),transparent_60%)]" />
+            <div className="absolute -bottom-5 -right-3 font-hero font-black text-8xl tracking-[-0.05em] text-black/[0.07] select-none transition-transform duration-700 group-hover:-translate-y-3 group-data-[active=true]:-translate-y-3">
+              {String(index + 1).padStart(2, "0")}
+            </div>
+            <span className="absolute top-4 left-4 rounded-full bg-black/[0.06] backdrop-blur border border-black/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#0a0a0a]">
+              {a.cat}
+            </span>
+          </>
+        )}
+      </div>
+      <div className="p-3.5 flex flex-col flex-1">
+        <h3 className="font-hero text-xl font-semibold leading-snug tracking-tight group-hover:text-white group-data-[active=true]:text-white transition-colors duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+          {a.title}
+        </h3>
+        <p className="mt-1.5 text-sm text-muted-foreground font-light leading-relaxed flex-1">
+          {a.desc}
+        </p>
+        <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+          <span>{a.time}</span>
+          {a.href ? (
+            <a
+              href={a.href}
+              className="inline-flex items-center gap-1 text-white/70 group-hover:text-white group-data-[active=true]:text-white transition-colors duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+            >
+              Read more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 group-data-[active=true]:translate-x-1" />
+            </a>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-white/70 group-hover:text-white group-data-[active=true]:text-white transition-colors duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)]">
+              Read more <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[500ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1 group-data-[active=true]:translate-x-1" />
+            </span>
+          )}
+        </div>
+      </div>
+    </article>
+    </div>
+  );
+}
+
 
 /* ─────────────── FAQ ─────────────── */
 
@@ -1480,31 +1682,11 @@ function FAQ() {
 
 /* ─────────────── CTA ─────────────── */
 
-const CONTACT_EMAIL = "contact@hellomedia.in";
+const CONTACT_EMAIL = "contact@hellomedia.com";
 
 function FinalCTA() {
-  const [copied, setCopied] = useState(false);
-  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // mailto: silently does nothing on machines with no mail app configured.
-  // If the page still has focus shortly after the click, no mail client
-  // opened — copy the address and tell the user instead.
-  const handleBookClick = () => {
-    if (copyTimer.current) clearTimeout(copyTimer.current);
-    copyTimer.current = setTimeout(() => {
-      if (!document.hasFocus()) return;
-      navigator.clipboard
-        ?.writeText(CONTACT_EMAIL)
-        .then(() => {
-          setCopied(true);
-          copyTimer.current = setTimeout(() => setCopied(false), 4000);
-        })
-        .catch(() => {});
-    }, 700);
-  };
-
   return (
-    <section id="contact" className="relative py-20 sm:py-28 lg:py-36 overflow-hidden">
+    <section id="contact" className="relative py-14 sm:py-18 lg:py-24 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(900px_450px_at_50%_0%,rgba(255,255,255,0.05),transparent_60%)]" />
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
       <div className="container-luxe relative text-center max-w-3xl">
@@ -1533,46 +1715,38 @@ function FinalCTA() {
           </p>
         </Reveal>
         <Reveal delay={0.22}>
-          <motion.a
-            href={`mailto:${CONTACT_EMAIL}`}
-            onClick={handleBookClick}
-            className="mt-10 sm:mt-12 block w-full rounded-[24px] sm:rounded-[28px] bg-white px-4 py-6 sm:py-9 text-center font-hero text-xl sm:text-3xl font-bold tracking-tight text-[rgb(5,6,7)]"
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 300, damping: 22 }}
-          >
-            {copied ? "Email copied — paste it anywhere" : "Book Your Strategy Consultation"}
-          </motion.a>
-        </Reveal>
-        <Reveal delay={0.3}>
-          <p className="mt-6 text-sm text-muted-foreground">
-            {copied ? (
-              <span className="text-white/80">{CONTACT_EMAIL} is on your clipboard</span>
-            ) : (
-              <>
-                or write to{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard?.writeText(CONTACT_EMAIL).then(() => {
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 4000);
-                    });
-                  }}
-                  className="text-white/80 underline underline-offset-4 decoration-white/30 hover:text-white transition-colors"
-                >
+          <div className="mt-10 sm:mt-12 flex flex-col items-center">
+            <motion.a
+              href="tel:+917292097749"
+              className="inline-flex items-center justify-center rounded-[24px] sm:rounded-[28px] bg-white px-8 sm:px-10 py-4 sm:py-5 font-hero text-lg sm:text-xl font-bold tracking-tight text-[rgb(5,6,7)]"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 22 }}
+            >
+              Book a Strategy Call
+            </motion.a>
+            <div className="mt-8 sm:mt-9 flex flex-col items-center gap-3.5 sm:flex-row sm:justify-center sm:gap-7">
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="group inline-flex items-center gap-2 text-[15px] sm:text-base font-medium tracking-tight text-white/90 transition-colors duration-300 hover:text-[#D8E312]"
+              >
+                <Mail className="h-[1em] w-[1em] shrink-0 opacity-80" />
+                <span className="underline-offset-[5px] decoration-[#D8E312]/40 group-hover:underline">
                   {CONTACT_EMAIL}
-                </button>{" "}
-                ·{" "}
-                <a
-                  href="#services"
-                  className="text-white/80 underline underline-offset-4 decoration-white/30 hover:text-white transition-colors"
-                >
-                  Explore Services
-                </a>
-              </>
-            )}
-          </p>
+                </span>
+              </a>
+              <span aria-hidden className="hidden h-4 w-px bg-white/15 sm:block" />
+              <a
+                href="tel:+917292097749"
+                className="group inline-flex items-center gap-2 text-[15px] sm:text-base font-medium tracking-tight text-white/90 transition-colors duration-300 hover:text-[#D8E312]"
+              >
+                <Phone className="h-[1em] w-[1em] shrink-0 opacity-80" />
+                <span className="underline-offset-[5px] decoration-[#D8E312]/40 group-hover:underline">
+                  +91 72920 97749
+                </span>
+              </a>
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>
@@ -1584,7 +1758,7 @@ function FinalCTA() {
 function Footer() {
   return (
     <footer className="border-t border-white/[0.06]">
-      <div className="container-luxe py-14 sm:py-16 grid gap-10 sm:gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
+      <div className="container-luxe py-10 sm:py-12 grid gap-10 sm:gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
         <div>
           <div className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-[rgb(5,6,7)] font-bold font-hero">
@@ -1595,78 +1769,91 @@ function Footer() {
             </span>
           </div>
           <p className="mt-5 text-sm text-muted-foreground font-light leading-relaxed max-w-xs">
-            A growth consulting firm building brands, engineering revenue, and
-            creating market leaders.
+            Building brands, accelerating growth, and creating market leaders.
           </p>
           <div className="mt-6 flex gap-3">
-            {[Linkedin, Instagram, Mail].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/10 hover:border-white/40 hover:text-white text-muted-foreground transition"
-                aria-label="Social"
-              >
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 hover:border-white/40 hover:text-white text-muted-foreground transition"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="h-4 w-4" />
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 hover:border-white/40 hover:text-white text-muted-foreground transition"
+              aria-label="Instagram"
+            >
+              <Instagram className="h-4 w-4" />
+            </a>
+            <a
+              href="mailto:contact@hellomedia.com"
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/10 hover:border-white/40 hover:text-white text-muted-foreground transition"
+              aria-label="Email"
+            >
+              <Mail className="h-4 w-4" />
+            </a>
           </div>
         </div>
 
-        {[
-          {
-            title: "Company",
-            links: ["About", "Services", "Industries", "Case Studies"],
-          },
-          {
-            title: "Resources",
-            links: ["Insights", "Research", "Podcasts", "Whitepapers"],
-          },
-          {
-            title: "Legal",
-            links: ["Privacy Policy", "Terms", "Cookies", "Contact"],
-          },
-        ].map((col) => (
-          <div key={col.title}>
-            <div className="eyebrow">{col.title}</div>
-            <ul className="mt-5 space-y-3">
-              {col.links.map((l) => (
-                <li key={l}>
-                  <a
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-white transition-colors"
-                  >
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <div>
+          <div className="eyebrow">Company</div>
+          <ul className="mt-5 space-y-3">
+            {[
+              { label: "About", href: "#about" },
+              { label: "Services", href: "#services" },
+              { label: "Industries", href: "#industries" },
+              { label: "Case Studies", href: "#case-studies" },
+              { label: "Insights", href: "#insights" },
+              { label: "Contact", href: "#contact" },
+            ].map((l) => (
+              <li key={l.label}>
+                <a
+                  href={l.href}
+                  className="text-sm text-muted-foreground hover:text-white transition-colors"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div>
-          <div className="eyebrow">Newsletter</div>
-          <p className="mt-5 text-sm text-muted-foreground font-light">
-            Strategy notes from our desk. Twice a month. No noise.
-          </p>
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="mt-4 flex gap-2 rounded-full border border-white/15 p-1.5 bg-black/30"
+          <div className="eyebrow">Let's Talk</div>
+          <h3 className="mt-5 text-sm font-semibold text-white">
+            Book Your Strategy Consultation
+          </h3>
+          <div className="mt-4 space-y-2 text-sm text-muted-foreground font-light">
+            <a
+              href="mailto:contact@hellomedia.com"
+              className="block hover:text-white transition-colors"
+            >
+              contact@hellomedia.com
+            </a>
+            <a
+              href="tel:+917292097749"
+              className="block hover:text-white transition-colors"
+            >
+              +91 72920 97749
+            </a>
+          </div>
+          <a
+            href="#contact"
+            className="mt-5 inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0B0C0E] transition-colors duration-300 hover:bg-[#D8E312]"
           >
-            <input
-              type="email"
-              placeholder="you@company.com"
-              className="flex-1 bg-transparent px-3 py-1.5 text-sm outline-none placeholder:text-muted-foreground"
-            />
-            <button className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-[rgb(5,6,7)]">
-              Join
-            </button>
-          </form>
+            Book a Call
+          </a>
         </div>
       </div>
       <div className="border-t border-white/[0.06]">
         <div className="container-luxe py-6 flex flex-wrap justify-between gap-4 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} Hello Media. All rights reserved.</div>
-          <div>Crafted for founders building market leaders.</div>
+          <div>© 2026 Hello Media. All Rights Reserved.</div>
+          <div>Designed & Developed by Hello Media</div>
         </div>
       </div>
     </footer>

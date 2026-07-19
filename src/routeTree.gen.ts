@@ -10,33 +10,118 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CaseStudiesMascoFoodsRouteImport } from './routes/case-studies.masco-foods'
+import { Route as CaseStudiesPolytankGhanaRouteImport } from './routes/case-studies.polytank-ghana'
+import { Route as CaseStudiesSunderDeepRouteImport } from './routes/case-studies.sunder-deep'
+import { Route as Insights7GrowthMistakesRouteImport } from './routes/insights.7-growth-mistakes'
+import { Route as InsightsAiWontReplaceGreatMarketingRouteImport } from './routes/insights.ai-wont-replace-great-marketing'
+import { Route as InsightsWhyStrategyNotMarketingRouteImport } from './routes/insights.why-strategy-not-marketing'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseStudiesMascoFoodsRoute = CaseStudiesMascoFoodsRouteImport.update({
+  id: '/case-studies/masco-foods',
+  path: '/case-studies/masco-foods',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseStudiesPolytankGhanaRoute =
+  CaseStudiesPolytankGhanaRouteImport.update({
+    id: '/case-studies/polytank-ghana',
+    path: '/case-studies/polytank-ghana',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const CaseStudiesSunderDeepRoute = CaseStudiesSunderDeepRouteImport.update({
+  id: '/case-studies/sunder-deep',
+  path: '/case-studies/sunder-deep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Insights7GrowthMistakesRoute = Insights7GrowthMistakesRouteImport.update({
+  id: '/insights/7-growth-mistakes',
+  path: '/insights/7-growth-mistakes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsAiWontReplaceGreatMarketingRoute =
+  InsightsAiWontReplaceGreatMarketingRouteImport.update({
+    id: '/insights/ai-wont-replace-great-marketing',
+    path: '/insights/ai-wont-replace-great-marketing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const InsightsWhyStrategyNotMarketingRoute =
+  InsightsWhyStrategyNotMarketingRouteImport.update({
+    id: '/insights/why-strategy-not-marketing',
+    path: '/insights/why-strategy-not-marketing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/case-studies/masco-foods': typeof CaseStudiesMascoFoodsRoute
+  '/case-studies/polytank-ghana': typeof CaseStudiesPolytankGhanaRoute
+  '/case-studies/sunder-deep': typeof CaseStudiesSunderDeepRoute
+  '/insights/7-growth-mistakes': typeof Insights7GrowthMistakesRoute
+  '/insights/ai-wont-replace-great-marketing': typeof InsightsAiWontReplaceGreatMarketingRoute
+  '/insights/why-strategy-not-marketing': typeof InsightsWhyStrategyNotMarketingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/case-studies/masco-foods': typeof CaseStudiesMascoFoodsRoute
+  '/case-studies/polytank-ghana': typeof CaseStudiesPolytankGhanaRoute
+  '/case-studies/sunder-deep': typeof CaseStudiesSunderDeepRoute
+  '/insights/7-growth-mistakes': typeof Insights7GrowthMistakesRoute
+  '/insights/ai-wont-replace-great-marketing': typeof InsightsAiWontReplaceGreatMarketingRoute
+  '/insights/why-strategy-not-marketing': typeof InsightsWhyStrategyNotMarketingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/case-studies/masco-foods': typeof CaseStudiesMascoFoodsRoute
+  '/case-studies/polytank-ghana': typeof CaseStudiesPolytankGhanaRoute
+  '/case-studies/sunder-deep': typeof CaseStudiesSunderDeepRoute
+  '/insights/7-growth-mistakes': typeof Insights7GrowthMistakesRoute
+  '/insights/ai-wont-replace-great-marketing': typeof InsightsAiWontReplaceGreatMarketingRoute
+  '/insights/why-strategy-not-marketing': typeof InsightsWhyStrategyNotMarketingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/case-studies/masco-foods'
+    | '/case-studies/polytank-ghana'
+    | '/case-studies/sunder-deep'
+    | '/insights/7-growth-mistakes'
+    | '/insights/ai-wont-replace-great-marketing'
+    | '/insights/why-strategy-not-marketing'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/case-studies/masco-foods'
+    | '/case-studies/polytank-ghana'
+    | '/case-studies/sunder-deep'
+    | '/insights/7-growth-mistakes'
+    | '/insights/ai-wont-replace-great-marketing'
+    | '/insights/why-strategy-not-marketing'
+  id:
+    | '__root__'
+    | '/'
+    | '/case-studies/masco-foods'
+    | '/case-studies/polytank-ghana'
+    | '/case-studies/sunder-deep'
+    | '/insights/7-growth-mistakes'
+    | '/insights/ai-wont-replace-great-marketing'
+    | '/insights/why-strategy-not-marketing'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CaseStudiesMascoFoodsRoute: typeof CaseStudiesMascoFoodsRoute
+  CaseStudiesPolytankGhanaRoute: typeof CaseStudiesPolytankGhanaRoute
+  CaseStudiesSunderDeepRoute: typeof CaseStudiesSunderDeepRoute
+  Insights7GrowthMistakesRoute: typeof Insights7GrowthMistakesRoute
+  InsightsAiWontReplaceGreatMarketingRoute: typeof InsightsAiWontReplaceGreatMarketingRoute
+  InsightsWhyStrategyNotMarketingRoute: typeof InsightsWhyStrategyNotMarketingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +133,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/case-studies/masco-foods': {
+      id: '/case-studies/masco-foods'
+      path: '/case-studies/masco-foods'
+      fullPath: '/case-studies/masco-foods'
+      preLoaderRoute: typeof CaseStudiesMascoFoodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-studies/polytank-ghana': {
+      id: '/case-studies/polytank-ghana'
+      path: '/case-studies/polytank-ghana'
+      fullPath: '/case-studies/polytank-ghana'
+      preLoaderRoute: typeof CaseStudiesPolytankGhanaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-studies/sunder-deep': {
+      id: '/case-studies/sunder-deep'
+      path: '/case-studies/sunder-deep'
+      fullPath: '/case-studies/sunder-deep'
+      preLoaderRoute: typeof CaseStudiesSunderDeepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights/7-growth-mistakes': {
+      id: '/insights/7-growth-mistakes'
+      path: '/insights/7-growth-mistakes'
+      fullPath: '/insights/7-growth-mistakes'
+      preLoaderRoute: typeof Insights7GrowthMistakesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights/ai-wont-replace-great-marketing': {
+      id: '/insights/ai-wont-replace-great-marketing'
+      path: '/insights/ai-wont-replace-great-marketing'
+      fullPath: '/insights/ai-wont-replace-great-marketing'
+      preLoaderRoute: typeof InsightsAiWontReplaceGreatMarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights/why-strategy-not-marketing': {
+      id: '/insights/why-strategy-not-marketing'
+      path: '/insights/why-strategy-not-marketing'
+      fullPath: '/insights/why-strategy-not-marketing'
+      preLoaderRoute: typeof InsightsWhyStrategyNotMarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CaseStudiesMascoFoodsRoute: CaseStudiesMascoFoodsRoute,
+  CaseStudiesPolytankGhanaRoute: CaseStudiesPolytankGhanaRoute,
+  CaseStudiesSunderDeepRoute: CaseStudiesSunderDeepRoute,
+  Insights7GrowthMistakesRoute: Insights7GrowthMistakesRoute,
+  InsightsAiWontReplaceGreatMarketingRoute:
+    InsightsAiWontReplaceGreatMarketingRoute,
+  InsightsWhyStrategyNotMarketingRoute: InsightsWhyStrategyNotMarketingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
